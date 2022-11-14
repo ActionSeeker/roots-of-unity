@@ -9,6 +9,7 @@ import { CustomSlider } from './custom-slider'
 
 // needed in the renderer process.
 ;(function () {
-    const canvas = new CanvasManipulator('plot-area')
     const customSlider = new CustomSlider()
+    const canvas = new CanvasManipulator('plot-area', customSlider)
+    canvas.animate()
 })()

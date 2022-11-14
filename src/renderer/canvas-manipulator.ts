@@ -1,7 +1,10 @@
+import { CustomSlider } from './custom-slider'
+import { ExtendedMath } from './extended-math'
+
 export class CanvasManipulator {
     private canvas: HTMLCanvasElement
     private context: CanvasRenderingContext2D
-    public constructor(id: string) {
+    public constructor(id: string, private slider: CustomSlider) {
         this.canvas = document.getElementById(id) as HTMLCanvasElement
         if (!this.canvas) {
             throw new Error(`No canvas with the given id={${id}} accessible`)
@@ -11,43 +14,56 @@ export class CanvasManipulator {
     }
 
     private setCanvasHeightAndWidth() {
-        this.canvas.height = window.innerWidth
+        this.canvas.width = window.innerWidth
         this.canvas.height = window.innerHeight
     }
 
-    // private animate() {
-    //     requestAnimationFrame(animate)
-    //     // context.clearRect(0, 0, canvasWidth, canvasHeight);
-    //     context.fillStyle = '#111111'
-    //     context.fillRect(0, 0, canvasWidth, canvasHeight)
-    //     context.beginPath()
-    //     // We start always from the middle
-    //     context.moveTo(canvasWidth / 2, canvasHeight / 2)
-    //     // We create a series of small lines that would create points
-    //     for (let i = 0; i <= manipulable.angle; i += 1) {
-    //         // let polarcoors: PolarCoordinates = polarPlotter(i + increment);
-    //         // let coordinates: Coordinates = polarToRectCoordinates(polarcoors);
-    //         // context.lineTo(
-    //         //   canvasWidth / 2 + coordinates.x * manipulable.amplitude,
-    //         //   canvasHeight / 2 + coordinates.y * manipulable.amplitude
-    //         // );
-    //         let polarcoors: PolarCoordinates[] = multiplePolarPlotter(
-    //             i + increment
-    //         )
-    //         let coordinates: Coordinates[] = []
-    //         polarcoors.forEach((p) =>
-    //             coordinates.push(polarToRectCoordinates(p))
-    //         )
-    //         coordinates.forEach((c) => {
-    //             context.lineTo(
-    //                 manipulable.xOffset + c.x * manipulable.amplitude,
-    //                 manipulable.yOffset + c.y * manipulable.amplitude
-    //             )
-    //         })
-    //     }
-    //     increment += manipulable.rotation
-    //     hue = (hue + 1) % 359
-    //     context.strokeStyle = `hsl(${hue}, ${colours.s}%, ${colours.l}%)`
-    //     context.stroke()
-    // }
+    private setCanvasColor(colorHex: string = '#111111') {
+        this.context.fillStyle = colorHex
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
+    }
+
+    public animate() {
+        requestAnimationFrame(this.animate.bind(this))
+        this.setCanvasColor()
+        this.context.beginPath()
+        let initialAngle = 0
+        let finalAngle = 360
+        let { radius, surd } = this.slider.getManipulableMathObjectState()
+        let color = this.slider.getManipulableColorObjectState()
+        let initialHue = color.hue
+        let sector = (Math.PI * 2) / surd
+        this.context.moveTo(this.canvas.width / 2, this.canvas.height / 2)
+        while (initialAngle < finalAngle) {
+            initialHue += initialHue % 359
+
+            let computedX =
+                this.canvas.width / 2 +
+                radius *
+                    Math.cos(ExtendedMath.convertDegreeToRadians(initialAngle))
+            let computedY =
+                this.canvas.height / 2 +
+                radius *
+                    Math.sin(ExtendedMath.convertDegreeToRadians(initialAngle))
+
+            // this.context.lineTo(computedX, computedY)
+
+            let gradient = this.context.createConicGradient(
+                0,
+                computedX / 2,
+                computedY / 2
+            )
+
+            gradient.addColorStop(0, 'red')
+            gradient.addColorStop(0.25, 'orange')
+            gradient.addColorStop(0.5, 'green')
+            gradient.addColorStop(0.75, 'green')
+            gradient.addColorStop(1, 'blue')
+
+            this.context.fillStyle = gradient
+            this.context.fillRect(computedX, computedY, 5, 5)
+
+            initialAngle += 360 / surd
+        }
+    }
 }

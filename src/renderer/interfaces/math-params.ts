@@ -1,4 +1,4 @@
 export interface MathParams<T> {
     surd: T
-    base: T
+    radius: T
 }
