@@ -19,6 +19,7 @@
     "license": "CC0-1.0",
     "devDependencies": {
         "@types/dat.gui": "^0.7.7",
+        "@types/three": "^0.146.0",
         "@typescript-eslint/eslint-plugin": "^4.33.0",
         "@typescript-eslint/parser": "^4.33.0",
         "electron": "^18.2.3",
@@ -32,7 +33,8 @@
         "webpack-node-externals": "^3.0.0"
     },
     "dependencies": {
-        "dat.gui": "^0.7.9"
+        "dat.gui": "^0.7.9",
+        "three": "^0.146.0"
     },
     "husky": {
         "hooks": {
